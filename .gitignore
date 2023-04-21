@@ -1,5 +1,6 @@
 /checkpoints
 /dataset
+/data
 /eval_results
 *.pyc
 /.vscode
