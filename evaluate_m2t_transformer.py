@@ -128,8 +128,8 @@ if __name__ == '__main__':
 
     split_file = pjoin(opt.data_root, opt.split_file)
 
-    dataset = Motion2TextEvalDataset(opt, mean, std, split_file, w_vectorizer)
-    data_loader = DataLoader(dataset, batch_size=opt.batch_size,num_workers=1, shuffle=True, pin_memory=True)
+    dataset = Motion2TextEvalDataset(opt, mean, std, split_file, w_vectorizer) # TODO
+    data_loader = DataLoader(dataset, batch_size=opt.batch_size,num_workers=1, shuffle=True, pin_memory=True) # TODO
 
     # vq_decoder.to(opt.device)
     # quantizer.to(opt.device)
@@ -174,7 +174,7 @@ if __name__ == '__main__':
                                                          sample=True, top_k=opt.top_k)[0].tolist()
                     pred_tokens = pred_tokens[1:]
                 else:
-                    pred_tokens = translator.translate_sentence(m_tokens)
+                    pred_tokens = translator.translate_sentence(m_tokens) # TODO make out the relationships between the tokens, captions, and motions !
                     pred_tokens = pred_tokens[1:-1]
 
                 # print(pred_tokens)

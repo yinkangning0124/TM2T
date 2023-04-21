@@ -200,4 +200,3 @@ dependencies:
     - theano==1.0.5
     - tomli==2.0.1
     - xdg==5.1.1
-prefix: /home/chuan/anaconda3/envs/tm2t
