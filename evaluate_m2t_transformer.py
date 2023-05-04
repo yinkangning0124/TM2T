@@ -83,7 +83,7 @@ if __name__ == '__main__':
     if opt.dataset_name == 't2m':
         opt.data_root = './dataset/HumanML3D/'
         opt.motion_dir = pjoin(opt.data_root, 'new_joint_vecs')
-        opt.m_token_dir = pjoin(opt.data_root, 'VQVAEV3_CB1024_CMT_H1024_NRES3')
+        opt.m_token_dir = pjoin(opt.data_root, 'VQVAEV3_CB1024_CMT_H1024_NRES3') # TODO
         opt.text_dir = pjoin(opt.data_root, 'texts')
         opt.joints_num = 22
         opt.max_motion_token = 55
@@ -175,7 +175,7 @@ if __name__ == '__main__':
                     pred_tokens = pred_tokens[1:]
                 else:
                     pred_tokens = translator.translate_sentence(m_tokens) # TODO make out the relationships between the tokens, captions, and motions !
-                    pred_tokens = pred_tokens[1:-1]
+                    pred_tokens = pred_tokens[1:-1] # m_tokens represent for motion token. pred_tokens represent for the predicted text token.
 
                 # print(pred_tokens)
                 print('Sampled Tokens %02d'%t)
