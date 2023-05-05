@@ -81,8 +81,8 @@ if __name__ == '__main__':
     num_replics = 5
     opt.unit_length = 4
 
-    file_root = './mixamo_datasets/humanml3d_form/markermanhiphopdance_my1.npy'
-    file_name = '00001'
+    file_root = './mixamo_datasets/humanml3d_form/new_joint_vecs/SwordAndShieldTurn.npy'
+    file_name = '00003'
     vq_encoder.to(opt.device)
     quantizer.to(opt.device)
     vq_encoder.eval()

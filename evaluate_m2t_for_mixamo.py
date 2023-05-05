@@ -92,7 +92,7 @@ if __name__ == '__main__':
     motion = motion[:196, :]
     #motion = motion.unsqueeze(0)
     m_tokens = []
-    with cs.open(pjoin(opt.m_token_dir, '00001.txt'), 'r') as f:
+    with cs.open(pjoin(opt.m_token_dir, '00004.txt'), 'r') as f:
         for line in f.readlines():
             m_tokens.append(line.strip().split(' '))
 
