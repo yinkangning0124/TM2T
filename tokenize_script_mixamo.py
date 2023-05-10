@@ -43,7 +43,7 @@ if __name__ == '__main__':
     opt.save_root = pjoin(opt.checkpoints_dir, opt.dataset_name, opt.name)
     opt.model_dir = pjoin(opt.save_root, 'model')
     opt.meta_dir = pjoin(opt.save_root, 'meta')
-    opt.data_root = './mixamo_datasets/humanml3d_form/'
+    opt.data_root = './dataset/Mixamo/'
 
     os.makedirs(opt.model_dir, exist_ok=True)
     os.makedirs(opt.meta_dir, exist_ok=True)
@@ -81,24 +81,25 @@ if __name__ == '__main__':
     num_replics = 5
     opt.unit_length = 4
 
-    file_root = './mixamo_datasets/humanml3d_form/new_joint_vecs/SwordAndShieldTurn.npy'
-    file_name = '00003'
+    file_root = 'new_joint_vecs'
+    files = os.listdir(pjoin(opt.data_root, file_root))
     vq_encoder.to(opt.device)
     quantizer.to(opt.device)
     vq_encoder.eval()
     quantizer.eval()
     with torch.no_grad():
-        for e in range(num_replics):
-            motion = np.load(file=file_root, allow_pickle=True)
-            motion = torch.from_numpy(motion).to(opt.device).float()
-            motion = motion[:196, :]
-            motion = motion.unsqueeze(0)
-            #motion = motion.to(opt.device).float()
-            pre_latents = vq_encoder(motion[..., :-4])
-            indices = quantizer.map2index(pre_latents)
-            indices = list(indices.cpu().numpy())
-            indices = [str(token) for token in indices]
-            with cs.open(pjoin(token_data_dir, '%s.txt'%file_name), 'a+') as f:
-                if e!= 0:
-                        f.write('\n')
-                f.write(' '.join(indices))
+        for file in files:
+            for e in range(num_replics):
+                motion = np.load(file=pjoin(opt.data_root, file_root, file), allow_pickle=True)
+                motion = torch.from_numpy(motion).to(opt.device).float()
+                motion = motion[:196, :]
+                motion = motion.unsqueeze(0)
+                #motion = motion.to(opt.device).float()
+                pre_latents = vq_encoder(motion[..., :-4])
+                indices = quantizer.map2index(pre_latents)
+                indices = list(indices.cpu().numpy())
+                indices = [str(token) for token in indices]
+                with cs.open(pjoin(token_data_dir, '%s.txt'%file[:-4]), 'a+') as f:
+                    if e!= 0:
+                            f.write('\n')
+                    f.write(' '.join(indices))

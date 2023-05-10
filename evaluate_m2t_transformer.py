@@ -68,6 +68,12 @@ if __name__ == '__main__':
     parser = TestT2MOptions()
     opt = parser.parse()
 
+
+    #TODO FIXME
+    with open('/home/aida/kangning/TM2T/dataset/Mixamo/VQVAEV3_CB1024_CMT_H1024_NRES3/Amy_Hand_Raising.txt' 'r') as f:
+        m_token = f.read()
+    
+
     opt.device = torch.device("cpu" if opt.gpu_id==-1 else "cuda:" + str(opt.gpu_id))
     torch.autograd.set_detect_anomaly(True)
     if opt.gpu_id != -1:
@@ -146,7 +152,7 @@ if __name__ == '__main__':
                                 src_pad_idx=opt.mot_pad_idx, trg_pad_idx=opt.txt_pad_idx,
                                 trg_sos_idx=opt.txt_start_idx, trg_eos_idx=opt.txt_end_idx)
         translator.to(opt.device)
-
+    
     '''Generating Results'''
     print('Generating Results')
     result_dict = {}
