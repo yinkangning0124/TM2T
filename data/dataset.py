@@ -664,6 +664,92 @@ class Motion2TextEvalDataset(data.Dataset):
         return word_embeddings, pos_one_hots, caption, sent_len, motion, m_tokens, m_length, all_captions
 
 
+class Motion2TextEvalDataset_Mixamo(data.Dataset):
+    def __init__(self, opt, mean, std, split_file, w_vectorizer):
+        self.opt = opt
+        self.w_vectorizer = w_vectorizer
+        self.max_length = 20
+        self.pointer = 0
+        self.max_motion_frame = opt.max_motion_frame
+        min_motion_len = 40 if self.opt.dataset_name =='t2m' else 24
+        id_list = []
+        with cs.open('./dataset/Mixamo/index.txt', 'r') as f:
+            for line in f.readlines():
+                id_list.append(line.strip())
+        data_dict = {}
+        self.name_list = os.listdir(opt.motion_dir)
+        cnt = 1
+        new_name_list = []
+        for name in tqdm(self.name_list):
+            # try:
+            
+            motion = np.load(pjoin(opt.motion_dir, name))
+            #if (len(motion)) < min_motion_len or (len(motion) >= 200):
+                #continue
+
+            m_token_list = []
+
+            with cs.open(pjoin(opt.m_token_dir, name[:-4] + '.txt'), 'r') as f:
+                for line in f.readlines():
+                    m_token_list.append(line.strip().split(' '))
+                    # if line.__contains__("419416"):
+                    #     print(name)
+                    #     print(line)
+
+            data_dict[name] = {'motion': motion,
+                              'name' : name,
+                              'm_token_list': m_token_list,
+                              'length': len(motion),
+                              'text': None}
+            new_name_list.append(name)
+            cnt += 1
+            # except:
+                # pass
+
+
+        self.mean = mean
+        self.std = std
+        self.data_dict = data_dict
+        self.name_list = new_name_list
+        # print(len(se))
+
+    def inv_transform(self, data):
+        return data * self.std + self.mean
+
+    def __len__(self):
+        return len(self.data_dict)
+
+    def __getitem__(self, item):
+        data = self.data_dict[self.name_list[item]]
+        motion, m_token_list, motion_name = data['motion'], data['m_token_list'], data['name']
+
+        m_tokens = random.choice(m_token_list)
+        m_tokens = [int(token) for token in m_tokens]
+
+        m_tokens = [self.opt.mot_start_idx] + \
+                   m_tokens + \
+                   [self.opt.mot_end_idx] + \
+                   [self.opt.mot_pad_idx] * (self.opt.max_motion_token - len(m_tokens) - 2)
+
+        # print(len(word_embeddings), sent_len, len(m_tokens))
+        m_tokens = np.array(m_tokens, dtype=int)
+
+        "Z Normalization"
+        motion = (motion - self.mean) / self.std
+
+        m_length = len(motion)
+
+        if m_length < self.max_motion_frame:
+            motion = np.concatenate([motion,
+                                     np.zeros((self.max_motion_frame - m_length, motion.shape[1]))
+                                     ], axis=0)
+        else:
+            m_length = self.max_motion_frame
+            motion = motion[:self.max_motion_frame]
+
+
+        return motion, m_tokens, m_length, motion_name
+
 class Motion2TextEvalSimpleDataset(data.Dataset):
     def __init__(self, opt, mean, std, split_file, w_vectorizer):
         self.opt = opt
